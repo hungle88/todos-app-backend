@@ -14,7 +14,6 @@ const uaa = require("./middlewares/uaa");
 
 var app = express();
 
-const MongoClient = require("mongodb").MongoClient;
 
 const url = process.env.URL;
 

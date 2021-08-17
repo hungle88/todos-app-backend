@@ -4,29 +4,23 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const fs = require("fs");
-const env = require('dotenv').config();
+const env = require("dotenv").config();
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
 
-const uaa=require('./middlewares/uaa');
-
+const uaa = require("./middlewares/uaa");
 
 var app = express();
 
-
-const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require("mongodb").MongoClient;
 
 const url = process.env.URL;
-const port = process.env.PORT || 5000
-const dbs = process.env.DATABASE
 
 const MongoClient = require("mongodb").MongoClient;
-const client = new MongoClient(
-  "mongodb+srv://hung:abc1234567@cluster0.7hv9o.mongodb.net?retryWrites=true&w=majority",
-  { useUnifiedTopology: true }
-);
+const client = new MongoClient(url, { useUnifiedTopology: true });
+
 let connection;
 
 // view engine setup
@@ -39,33 +33,35 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", function(req, res, next){
-  const log = fs.createWriteStream(__dirname+"/access.log");
+app.use("/", function (req, res, next) {
+  const log = fs.createWriteStream(__dirname + "/access.log");
   log.write(req.method + req.url);
   next();
-})
+});
 //database connection
-app.use('/', (req, res, next) => {
-  if (!connection) { // connect to database
+app.use("/", (req, res, next) => {
+  if (!connection) {
+    // connect to database
     client.connect(function (err) {
-      connection = client.db('project');
+      connection = client.db("project");
       req.db = connection;
       next();
-    })
-  } else { // 
+    });
+  } else {
+    //
     req.db = connection;
     next();
   }
 });
-app.use(uaa.checkToken)
+app.use(uaa.checkToken);
 
 app.use("/", indexRouter);
-app.use("/users", uaa.checkToken,usersRouter);
+app.use("/users", uaa.checkToken, usersRouter);
 app.use("/auth", authRouter);
 
-
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {//
+app.use(function (req, res, next) {
+  //
   next(createError(404));
 });
 
@@ -80,9 +76,8 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-
-app.listen(3000, function(){
-  console.log("It's running on port 3000")
+app.listen(3000, function () {
+  console.log("It's running on port 3000");
 });
 
 module.exports = app;

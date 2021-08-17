@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const fs = require("fs");
+const env = require('dotenv').config();
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -13,6 +14,13 @@ const uaa=require('./middlewares/uaa');
 
 
 var app = express();
+
+
+const MongoClient = require('mongodb').MongoClient;
+
+const url = process.env.URL;
+const port = process.env.PORT || 5000
+const dbs = process.env.DATABASE
 
 const MongoClient = require("mongodb").MongoClient;
 const client = new MongoClient(
